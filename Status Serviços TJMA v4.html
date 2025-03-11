@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status de Sistemas e Serviços Tribunal</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        h1 { color: #333; }
+        table { width: 80%; margin: 20px auto; border-collapse: collapse; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
+        th { background-color: #f4f4f4; }
+        .online { color: green; font-weight: bold; }
+        .offline { color: red; font-weight: bold; }
+        .loading { color: gray; font-style: italic; }
+    </style>
+</head>
+<body>
+    <h1>Status de Sistemas e Serviços Tribunal de Justiça do Estado do Maranhão</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Serviço</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="statusTable">
+            <!-- Os status dos sites serão inseridos aqui pelo JavaScript -->
+        </tbody>
+    </table>
+
+    <script>
+        const sites = [
+            { nome: "SITE TJMA", url: "https://www.tjma.jus.br/" },
+            { nome: "Intranet TJMA", url: "http://intranet.tjma.jus.br/" },
+            { nome: "Sentinela", url: "https://sistemas.tjma.jus.br/" },
+            { nome: "PJe 1º Grau", url: "https://pje.tjma.jus.br/" },
+            { nome: "PJe 2º Grau", url: "https://pje2.tjma.jus.br/" },
+            { nome: "CNJ Corporativo", url: "https://corporativo.cnj.jus.br/" },
+            { nome: "Pje Midias", url: "https://pje.jus.br/midias/" },
+            { nome: "Jurisconsult", url: "https://jurisconsult.tjma.jus.br/#/home" },
+            { nome: "Ponto Eletrônico", url: "http://tempore.tjma.jus.br/" },
+            { nome: "E-NatJus", url: "https://www.pje.jus.br/e-natjus/" }
+        ];
+
+        async function verificarSites() {
+            const tabela = document.getElementById("statusTable");
+            tabela.innerHTML = "";
+
+            for (const site of sites) {
+                const linha = document.createElement("tr");
+                const nomeCelula = document.createElement("td");
+                nomeCelula.textContent = site.nome;
+                nomeCelula.className = "loading"; // Padrão enquanto verifica
+                linha.appendChild(nomeCelula);
+
+                const statusCelula = document.createElement("td");
+                statusCelula.textContent = "Verificando...";
+                statusCelula.className = "loading";
+                linha.appendChild(statusCelula);
+                tabela.appendChild(linha);
+
+                try {
+                    await fetch(site.url, { mode: 'no-cors' });
+                    statusCelula.textContent = "Online";
+                    statusCelula.className = "online";
+                    nomeCelula.className = "online"; // Serviço verde se online
+                } catch (error) {
+                    statusCelula.textContent = "Offline";
+                    statusCelula.className = "offline";
+                    nomeCelula.className = "offline"; // Serviço vermelho se offline
+                }
+            }
+        }
+
+        verificarSites();
+        setInterval(verificarSites, 30000); // Atualiza a cada 30 segundos
+    </script>
+</body>
+</html>
